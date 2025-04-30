@@ -1,36 +1,46 @@
-# MQTT Remote Scheduler 🕒 🔌
+IntelliLight Scheduler 🕒💡
+A modern web-powered system for scheduling and remotely managing an Arduino-controlled relay using MQTT and WebSocket technology.
 
-A web-based MQTT scheduling system that controls an Arduino relay based on user-defined schedules through a modern web interface.
+🔍 Project Overview
+IntelliLight Scheduler enables remote automation of a relay switch via a simple, elegant interface:
 
-## Project Overview 🎯
+A user-friendly web dashboard to set lighting schedules
 
-This project implements a remote relay control system using MQTT protocol and WebSocket communication:
-- A web interface for setting ON/OFF times
-- A WebSocket server that forwards schedules to MQTT
-- A Python subscriber that receives schedules and controls Arduino
-- An Arduino sketch that controls a physical relay (LOW = ON, HIGH = OFF)
+A WebSocket server that bridges the frontend with an MQTT broker
 
-## Components 🔧
+A Python-based MQTT subscriber that relays commands to an Arduino device
 
-### 1. Web Interface 🌐
-- Modern, responsive design using Bootstrap
-- Real-time schedule updates via WebSocket
-- Simple time input fields for ON/OFF scheduling
+An Arduino sketch that toggles the relay to turn a connected light ON or OFF
 
-### 2. WebSocket Server (`websocket_server.py`) 🔄
-- Handles web client connections
-- Maintains schedule checking (every 3 seconds)
-- Publishes ON/OFF commands to MQTT at scheduled times
+🧩 Core Components
+1. 🌐 Web Interface
+Built with Bootstrap for a clean, responsive layout
 
-### 3. MQTT Subscriber (`subscriber.py`) 📥
-- Receives commands from MQTT broker
-- Manages serial communication with Arduino
-- Provides detailed logging of all operations
+Enables real-time scheduling via WebSocket
 
-### 4. Arduino Controller (`arduino/relay.ino`) ⚡
-- Controls physical relay on pin 7
-- LOW = Light ON, HIGH = Light OFF
-- Includes debug serial output
+Easy-to-use time input for ON/OFF settings
+
+2. 🔄 WebSocket Server (websocket_server.py)
+Manages communication between browser and backend
+
+Checks for scheduled tasks every 3 seconds
+
+Publishes appropriate MQTT messages at the right time
+
+3. 📥 MQTT Subscriber (subscriber.py)
+Listens for MQTT messages
+
+Communicates with Arduino over a serial connection
+
+Provides detailed terminal logs for transparency and debugging
+
+4. ⚡ Arduino Sketch (arduino/relay.ino)
+Handles relay control via digital pin 7
+
+Turns ON (LOW) or OFF (HIGH) the connected device
+
+Includes debug output over Serial for monitoring
+
 
 ## Setup Requirements 📋
 
@@ -110,7 +120,7 @@ The system provides detailed logging at each step:
 
 ### Web Interface
 
-![The UI from where you will automate the light bulb to ](./embedded.png)
+![The UI from where you will automate the light bulb to ](./image.png)
 
 
 ## License 📄
