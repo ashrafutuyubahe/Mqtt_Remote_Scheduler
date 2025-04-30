@@ -2,64 +2,62 @@ import paho.mqtt.client as mqtt
 import serial
 import time
 
-print("=== MQTT Light Controller Subscriber ===")
-print("Initializing...")
+print("=== IoT Light Control Subscriber ===")
+print("Initializing MQTT-Serial bridge...")
 
 # Set your serial port and baud rate
 try:
     ser = serial.Serial('COM5', 9600, timeout=1)
-    print("✓ Connected to Arduino on COM4")
-    # Wait for Arduino to initialize
+    print("✓ Serial connection established with Arduino on COM5")
     time.sleep(2)
     initial_msg = ser.readline().decode().strip()
-    while initial_msg:  # Read all initial messages
-        print(f"Arduino: {initial_msg}")
+    while initial_msg:
+        print(f"[Arduino Init]: {initial_msg}")
         initial_msg = ser.readline().decode().strip()
 except Exception as e:
-    print(f"✗ Error connecting to Arduino: {str(e)}")
+    print(f"✗ Failed to connect to Arduino: {str(e)}")
     raise e
 
-# Store schedule
+# Store schedule (optional future use)
 schedule = {
     'on_time': None,
     'off_time': None
 }
 
-def on_connect(client, userdata, flags, rc):
-    print(f"✓ Connected to MQTT broker (result code {rc})")
+def handle_mqtt_connection(client, userdata, flags, rc):
+    print(f"✓ Connected to MQTT broker (status code {rc})")
     client.subscribe("relay/controll")
-    print("✓ Subscribed to relay/controll topic")
+    print("✓ Listening on topic: relay/controll")
 
-def on_message(client, userdata, msg):
+def handle_mqtt_command(client, userdata, msg):
     try:
         command = msg.payload.decode().strip()
-        print("\n=== New Command Received ===")
-        print(f"MQTT Command: {command}")
+        print("\n📥 New MQTT Command Received:")
+        print(f"> Command Payload: {command}")
         
         if command in ["ON", "OFF"]:
-            print(f"Forwarding to Arduino: {command}")
+            print(f"→ Sending command to Arduino: {command}")
             ser.write(f"{command}\n".encode())
             
-            # Read and print Arduino's response
-            print("\nArduino Response:")
-            time.sleep(0.1)  # Give Arduino time to respond
+            print("🔁 Awaiting Arduino response...")
+            time.sleep(0.1)
             while ser.in_waiting:
                 response = ser.readline().decode().strip()
-                print(f"  {response}")
+                print(f"[Arduino]: {response}")
         else:
-            print(f"✗ Invalid command received: {command}")
+            print(f"⚠️ Unrecognized command: {command}")
             
     except Exception as e:
-        print(f"✗ Error processing message: {str(e)}")
+        print(f"✗ Error handling MQTT message: {str(e)}")
 
 # MQTT setup
 client = mqtt.Client()
-client.on_message = on_message
-client.on_connect = on_connect
+client.on_message = handle_mqtt_command
+client.on_connect = handle_mqtt_connection
 
 print("\nConnecting to MQTT broker...")
 client.connect("157.173.101.159", 1883, 60)
 
 # Start MQTT loop
-print("Starting message loop...\n")
+print("🔄 MQTT loop started. Awaiting commands...\n")
 client.loop_forever()

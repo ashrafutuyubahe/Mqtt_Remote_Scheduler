@@ -20,7 +20,7 @@ def run_http_server():
     server = HTTPServer(('localhost', 8000), HttpHandler)
     server.serve_forever()
 
-async def check_schedule(on_time, off_time):
+async def schedule_controller(on_time, off_time):
     """Check schedule and publish commands at appropriate times"""
     while True:
         current_time = datetime.now().strftime("%H:%M")
@@ -49,7 +49,7 @@ async def handle_websocket(websocket):
             
             try:
                 # Start schedule checker
-                schedule_task = asyncio.create_task(check_schedule(on_time, off_time))
+                schedule_task = asyncio.create_task(schedule_controller(on_time, off_time))
                 
                 await websocket.send(json.dumps({
                     'success': True,
